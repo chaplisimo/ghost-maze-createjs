@@ -21,12 +21,12 @@ function init(x,y) {
 
     queue = new createjs.LoadQueue();
     queue.on("complete", startGame, this);
-    queue.loadFile({id:"ghost", src:"https://github.com/chaplisimo/ghost-maze-createjs/blob/master/img/Ghost_alpha.PNG"});
-    queue.loadManifest([{id:"L", src:"https://github.com/chaplisimo/ghost-maze-createjs/blob/master/img/L.png"},
-                        {id:"II", src:"https://github.com/chaplisimo/ghost-maze-createjs/blob/master/img/II.PNG"},
-    					{id:"I", src:"https://github.com/chaplisimo/ghost-maze-createjs/blob/master/img/I.PNG"},
-    					{id:"U", src:"https://github.com/chaplisimo/ghost-maze-createjs/blob/master/img/U.PNG"},
-    					{id:"none", src:"https://github.com/chaplisimo/ghost-maze-createjs/blob/master/img/none.PNG"}
+    queue.loadFile({id:"ghost", src:"https://raw.githubusercontent.com/chaplisimo/ghost-maze-createjs/master/img/Ghost_alpha.PNG"});
+    queue.loadManifest([{id:"L", src:"https://raw.githubusercontent.com/chaplisimo/ghost-maze-createjs/master/img/L.png"},
+                        {id:"II", src:"https://raw.githubusercontent.com/chaplisimo/ghost-maze-createjs/master/img/II.PNG"},
+    					{id:"I", src:"https://raw.githubusercontent.com/chaplisimo/ghost-maze-createjs/master/img/I.PNG"},
+    					{id:"U", src:"https://raw.githubusercontent.com/chaplisimo/ghost-maze-createjs/master/img/U.PNG"},
+    					{id:"none", src:"https://raw.githubusercontent.com/chaplisimo/ghost-maze-createjs/master/img/none.PNG"}
                         ]);
 }
 
