@@ -10,19 +10,23 @@
 	Maze.prototype.width;
 	Maze.prototype.height;
 	
-	Maze.prototype.labArray
+	Maze.prototype.labArray;
 	
 	//Maze.prototype.steps;
 	
 	
 	Maze.prototype.initialize = function (mazeName, tileArray, x_end){
 		this.tiles = new Array();
-		for(var i=0; i<tileArray.length; i++){
-			tile = new createjs.Bitmap(queue.getResult(tileArray[i]));
-			tile.regX = 32;
-		    tile.regY = 32;
-		    this.tiles.push(tile);
-		}
+		
+		var tile = new createjs.Bitmap(queue.getResult("I"));
+		tile.regX = 32;
+		tile.regY = 32;
+		this.tiles.push(tile);
+		
+		tile = new createjs.Bitmap(queue.getResult("none"));
+		tile.regX = 32;
+		tile.regY = 32;
+		this.tiles.push(tile);
 		
 		this.x_end = x_end;
 		
@@ -41,7 +45,9 @@
 									north : null,
 									south : null,
 									east : null,
-									west : null};
+									west : null,
+									printx : i,
+									printy : j};
 			}
 		}
 		
@@ -51,8 +57,6 @@
 		    
 		//console.log(this.steps);
 	}
-	
-	window.Maze = Maze;
 	
 	Maze.prototype.connectMaze = function(column,row,previousDirection){
 		
@@ -130,20 +134,15 @@
 		return neighbours[randomNum];
 	}
 	
-	Maze.prototype.hitWall = function(ghost){
-		//console.log("QFS:"+ghost.qfs);
-		//console.log("COORD: " + ghost.x +" , "+ ghost.y);
-		for(var i=0 ; i< this.width; i++){
-			for(var j=0 ; j< this.height; j++){
-				var rightBound = this.labArray[i][j].globalToLocal(ghost.x+ghost.qfs, ghost.y);
-				var leftBound = this.labArray[i][j].globalToLocal(ghost.x-ghost.qfs, ghost.y);
-				if( (this.labArray[i][j].hitTest(leftBound.x, leftBound.y) && ghost.direction == -1)|| 
-						(this.labArray[i][j].hitTest(rightBound.x, rightBound.y) && ghost.direction == 1)){	
-					ghost.direction *= -1;
-					ghost.mirrorSprite();
-				}
-			}
-		}
+	Maze.prototype.calculatePosition = function(xPos, yPos){
+		var xRange = Math.floor(xPos / this.tiles[1].getBounds().width);
+		var yRange = Math.floor(yPos / this.tiles[1].getBounds().height);
+		//console.log("x: "+ xRange+" - y: "+yRange);
+		//console.log("Bounds: "+ this.tiles[0].getBounds());
+		return xRange < this.width && yRange < this.height ? this.labArray[xRange][yRange] : null;
 	}
+
+	
+	window.Maze = Maze;
 	
 }(window));

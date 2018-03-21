@@ -18,7 +18,6 @@
     this.idleWaitTicker = 0;
 
     var quaterFrameSize;
-    this.qfs;
 
     Ghost.prototype.initialize = function (ghostName, imgGhost, x_end) {
         var localSpriteSheet = new createjs.SpriteSheet({
@@ -37,72 +36,86 @@
         this.Sprite_initialize(localSpriteSheet);
         this.x_end = x_end;
 
-        quaterFrameSize = this.spriteSheet.getFrame(0).rect.width / 2;
-        this.qfs = quaterFrameSize;
+        quaterFrameSize = this.spriteSheet.getFrame(0).rect.width / 4;
 
         // start playing the first sequence:
         this.gotoAndPlay("walk");     //animate
 
         // set up a shadow. Note that shadows are ridiculously expensive. You could display hundreds
         // of animated ghost if you disabled the shadow.
-        this.shadow = new createjs.Shadow("#000", 3, 2, 2);
+        //this.shadow = new createjs.Shadow("#000", 3, 2, 2);
 
         this.name = ghostName;
         // 1 = right & -1 = left
-        this.direction = 1;
+        this.directionX = 1;
+        // 1 = down & -1 = up
+        this.directionY = 0;
         // velocity
         this.vX = 1;
-        this.vY = 0;
+        this.vY = 1;
         
         this.scaleX = 0.75;
         this.scaleY = 0.75;
+        
         // starting directly at the first frame of the walk_h sequence
        // this.currentFrame = 21;
     }
 
-    Ghost.prototype.mirrorSprite = function(){
-    	if(this.currentAnimation == "walk"){
-    		this.gotoAndPlay("walk_h");
-    	}else{
+    Ghost.prototype.directionSprite = function(){
+    	if(this.directionX == 1){
     		this.gotoAndPlay("walk");
+    	}else if(this.directionX == -1){
+    		this.gotoAndPlay("walk_h");
     	}
     }
+
+    Ghost.prototype.currentTile;
+    this.lastTile;
     
     Ghost.prototype.tick = function () {
+   	
         if (!this.isInIdleMode) {
-            // Moving the sprite based on the direction & the speed
-            this.x += this.vX * this.direction;
-            this.y += this.vY * this.direction;
+            // Moving the sprite based on the directionX & the speed
+            this.x += this.vX * this.directionX;
+            this.y += this.vY * this.directionY;
 
-            // Hit testing the screen width, otherwise our sprite would disappear
-            if (this.x >= this.x_end - (quaterFrameSize + 1) || this.x < (quaterFrameSize + 1)) {
-                this.mirrorSprite();
-                this.idleWaitTicker = this.IDLEWAITTIME;
-                this.isInIdleMode = true;
+            var directions = [];
+
+            if(this.currentTile != null && this.currentTile != this.lastTile
+            		&& this.x < (this.currentTile.x + 4) 
+            		&& this.x > (this.currentTile.x - 4)
+            		&& this.y < (this.currentTile.y + 4) 
+            		&& this.y > (this.currentTile.y - 4)){
+            	
+            	//Current Tile
+            	//console.log("x: "+this.currentTile.printx +" - y: "+this.currentTile.printy );
+            	
+            	if(this.currentTile.north != null){directions.push({x:0,y:1});}
+            	if(this.currentTile.south != null){directions.push({x:0,y:-1});}
+            	if(this.currentTile.east != null){directions.push({x:1,y:0});}
+            	if(this.currentTile.west != null){directions.push({x:-1,y:0});}
+            	
+            	var oppositeDirection = -1;
+            	if(directions.length > 1){
+            		for(var d=0;d<directions.length;d++){
+            			if((this.directionX!= 0 && directions[d].x == this.directionX*-1) || (this.directionY!= 0 && directions[d].y == this.directionY*-1)){
+            				oppositeDirection = d;
+						}
+            		}
+        		}
+            	
+            	if(oppositeDirection != -1){directions.splice(oppositeDirection,1); }
+            	
+            	var r =  Math.floor(Math.random() * directions.length);
+            	
+            	this.directionX = directions[r].x;
+            	this.directionY = directions[r].y;
+            	
+            	this.directionSprite();
+            	
+            	this.lastTile = this.currentTile;
             }
             
-        }
-        else {
-            this.idleWaitTicker--;
-
-            if (this.idleWaitTicker == 0) {
-                this.isInIdleMode = false;
-
-                // Hit testing the screen width, otherwise our sprite would disappear
-                if (this.x >= this.x_end - (quaterFrameSize + 1)) {
-                    // We've reached the right side of our screen
-                    // We need to walk left now to go back to our initial position
-                    this.direction = -1;
-                    this.mirrorSprite();
-                }
-
-                if (this.x < (quaterFrameSize + 1)) {
-                    // We've reached the left side of our screen
-                    // We need to walk right now
-                    this.direction = 1;
-                    this.mirrorSprite();
-                }
-            }
         }
         
 
